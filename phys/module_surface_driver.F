@@ -18,9 +18,9 @@ CONTAINS
      &          ,isltyp,itimestep,julian_in,ivgtyp,lowlyr,mavail,rmol &
      &          ,num_soil_layers,p8w,pblh,pi_phy,pshltr,fm,fhh,psih   &
 #if (NMM_CORE==1)
-     &          ,psim,p_phy,q10,q2,qfx,taux,tauy,qsfc,qshltr,qz0      &
+     &          ,psim,holcpl,p_phy,q10,q2,qfx,taux,tauy,qsfc,qshltr,qz0      &
 #else
-     &          ,psim,p_phy,q10,q2,qfx,qsfc,qshltr,qz0                &
+     &          ,psim,holcpl,p_phy,q10,q2,qfx,qsfc,qshltr,qz0                &
 #endif
      &          ,raincv,rho,sfcevp,sfcexc,sfcrunoff                   &
      &          ,smois,smstav,smstot,snoalb,snow,snowc,snowh,stepbl   &
@@ -688,20 +688,26 @@ CONTAINS
    REAL, DIMENSION( ims:ime, jms:jme ) , OPTIONAL, INTENT(INOUT)::   BLO4    ! ssib-snow
    REAL, DIMENSION( ims:ime, jms:jme ) , OPTIONAL, INTENT(INOUT)::   HO4     ! ssib-snow
 !----------------------------------------------------------
-   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   BR
+!   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   BR
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   BR
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   CHKLOWQ
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   GZ1OZ0
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSHLTR
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   FHH
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   FM
-   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSIH
-   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSIM
+!   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSIH
+!   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSIM
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   PSIH
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   PSIM
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(IN)::   HOLCPL
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   Q10
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   QSHLTR
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   TH10
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   TSHLTR
-   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   U10
-   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   V10
+!   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   U10
+!   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   V10
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   U10
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   V10
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(OUT)::   PSFC
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   ACSNOM
    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT)::   SFCEVP
@@ -1517,9 +1523,10 @@ CONTAINS
      DO ij = 1, num_tiles
         CALL CCSMSFCLAY( u_phytmp, v_phytmp, p_phy, qv_curr, th_phy, &
                          rho, dz8w, xland, tsk, psfc, P1000mb, rcp,  &
-                         ust, hfx, qfx, t2, znt, wspd, gz1oz0,       &
+                         ust, hfx, qfx, t2, znt,holcpl, wspd, gz1oz0,       &
                          br, regime, mol, rmol, zol, psim, psih,     &
-                         fm, fhh, u10, v10, th2, flhc,               &
+!                         fm, fhh, u10, v10, th2, flhc,               &
+                         fm, fhh, th2, flhc,                         &
                          ims, ime, jms, jme, kms, kme,               &
                          i_start(ij),i_end(ij),j_start(ij),j_end(ij),&
                          Cd=cd, Cda=cda, Ck=ck, Cka=cka              )
@@ -5751,10 +5758,11 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
 #ifdef CCSMCOUPLED
    SUBROUTINE CCSMSFCLAY( U, V, P, Q, THETA, RHO, DZ8W,             &
                           XLAND, TSK, PSFC, P1000mb, ROVCP,         &
-                          UST, HFX, QFX, T2, ZNT, WSPD, GZ1OZ0,     &
+                          UST, HFX, QFX, T2, ZNT,HOLCPL, WSPD, GZ1OZ0,     &
                           BR, REGIME, MOL, RMOL, ZOL,               &
                           PSIM, PSIH, FM, FH,                       &
-                          U10, V10, TH2, FLHC,                      &
+!                          U10, V10,                                 &
+                          TH2, FLHC,                      &
                           ims, ime, jms, jme, kms, kme,             &
                           its, ite, jts, jte,                       &
                           Cd, Cda, Ck, Cka                          )
@@ -5793,25 +5801,29 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
                INTENT(IN)                   ::                UST, &
                                                               HFX, &
                                                               QFX, &
+                                                               BR, &
+                                                             PSIM, &
+                                                             PSIH, &
                                                                T2, &
-                                                              ZNT
+                                                              ZNT, &
+                                                           HOLCPL     
 
       REAL,    DIMENSION( ims:ime, jms:jme )                     , &
                INTENT(INOUT)                ::               WSPD
 
       REAL,    DIMENSION( ims:ime, jms:jme )                     , &
                INTENT(OUT)                  ::             GZ1OZ0, &
-                                                               BR, &
+!                                                               BR, &
                                                            REGIME, &
                                                               MOL, &
                                                              RMOL, &
                                                               ZOL, &
-                                                             PSIM, &
-                                                             PSIH, &
+!                                                            PSIM, &
+!                                                            PSIH, &
                                                                FM, &
                                                                FH, &
-                                                              U10, &
-                                                              V10, &
+!                                                              U10, &
+!                                                              V10, &
                                                               TH2, &
                                                              FLHC
 
@@ -5823,7 +5835,6 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
 
 
       ! --- Local variables
-
 
       INTEGER,  PARAMETER :: KBOT = 1           ! Atmosphere bottom layer
       REAL(R8), PARAMETER :: ZHS = 2.2E-09_R8   ! Roughness length for heat over ocean (stable)
@@ -5867,10 +5878,11 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
             ! --- Compute stability parameter and inverse of Monin-Obukhov's length ---
           
             ZA = 0.5_r8 * DZ8W(I,KBOT,J) ! Height of bottom layer
-            ZETA = SHR_CONST_KARMAN * SHR_CONST_G * ZA * &
-                  (TSTAR/THETA(I,KBOT,J) + QSTAR/(1._r8/SHR_CONST_ZVIR + Q(I,KBOT,J))) &
-                  / (UST(I,J) * UST(I,J))
-
+!            ZETA = SHR_CONST_KARMAN * SHR_CONST_G * ZA * &
+!                  (TSTAR/THETA(I,KBOT,J) + QSTAR/(1._r8/SHR_CONST_ZVIR + Q(I,KBOT,J))) &
+!                  / (UST(I,J) * UST(I,J))
+!            ZETA=WSPD(I,J)     ! the hol from coupler temporally in WSPD(I,J) @YL
+            ZETA=HOLCPL(I,J)
             ! --- Make sure zeta is within formulation-dependent limits ---
             ! --- Perhaps not needed?
             FAC = SHR_CONST_KARMAN * RHO(I,KBOT,J) * UST(I,J)
@@ -5902,8 +5914,9 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
             ! 1. Stability functions for momentum
 
             LN_ZA_Z0 = LOG(ZA/ZNT(I,J))
-            CALL MOS(XLAND(I,J), ZETA, PSIM_A, PSIH_A)
-            FM_A = LN_ZA_Z0 - PSIM_A
+!            CALL MOS(XLAND(I,J), ZETA, PSIM_A, PSIH_A)
+!            FM_A = LN_ZA_Z0 - PSIM_A
+            FM_A = LN_ZA_Z0 - PSIM(I,J)
             FM_A = SIGN( MAX(ABS(FM_A), FEPS), FM_A )
 
 
@@ -5923,17 +5936,19 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
                FH_A = FAC * CP * DTHETA / HFX(I,J)
                IF (XLAND(I,J).LT.1.5) THEN
                   ! Estimate roughness length for heat over land
-                  LN_ZH = LOG(ZA) - FH_A - PSIH_A
+!                  LN_ZH = LOG(ZA) - FH_A - PSIH_A
+                  LN_ZH = LOG(ZA) - FH_A - PSIH(I,J)
                END IF
             ELSE
                ! Use previous estimate of stability function for heat
-               FH_A   = LOG(ZA) - LN_ZH - PSIH_A
+!               FH_A   = LOG(ZA) - LN_ZH - PSIH_A
+               FH_A   = LOG(ZA) - LN_ZH - PSIH(I,J)
             END IF
             FH_A = SIGN( MAX(ABS(FH_A), FEPS), FH_A )
 
             GZ1OZ0(I,J) = REAL(LN_ZA_Z0)
-            PSIM(I,J)   = REAL(PSIM_A)
-            PSIH(I,J)   = REAL(PSIH_A)
+!            PSIM(I,J)   = REAL(PSIM_A)
+!            PSIH(I,J)   = REAL(PSIH_A)
             FM(I,J)     = REAL(FM_A)
             FH(I,J)     = REAL(FH_A)
 
@@ -5943,7 +5958,7 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
 
             ! --- Compute bulk Richardson number & determine stability class
 
-            BR(I,J)     = REAL(ZETA * FH_A/(FM_A * FM_A))
+!            BR(I,J)     = REAL(ZETA * FH_A/(FM_A * FM_A))
 
             IF (BR(I,J).LT.0.0) THEN
                REGIME(I,J) = 4.       ! Free convection conditions
@@ -5972,9 +5987,9 @@ HFX_SEA, LH_SEA, QFX_SEA, QGH_SEA, QSFC_SEA, TSK_SEA,  &
             IF (PRESENT(Cd)) Cd(I,J) = REAL(RD * RD)
             IF (PRESENT(Ck)) Ck(I,J) = REAL(SHR_CONST_KARMAN * RD / FH_A)
 
-            FAC = FAC / FM_A
-            U10(I,J) = FAC * U(I,KBOT,J)
-            V10(I,J) = FAC * V(I,KBOT,J)
+!            FAC = FAC / FM_A
+!            U10(I,J) = FAC * U(I,KBOT,J)
+!            V10(I,J) = FAC * V(I,KBOT,J)
             TH2(I,J) = T2(I,J) * (P1000mb / PSFC(I,J)) ** ROVCP
             
             ! -- Compute wind speed (not sure if needed)

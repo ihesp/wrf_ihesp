@@ -1257,6 +1257,14 @@ contains
                  grid % qfx(i,j)   = -fcorr * x2a_a % rAttr(index_x2a_Faxx_evap, n)       ! evaporation    water flux
                  !! grid % znt(i,j)   =  fcorr * exp(max(logz0_min, x2a_a % rAttr(index_x2a_Sx_logz0, n)))   ! roughness length (m)
 
+                 !---- stability related variabels
+                  grid % u10(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10x, n)        ! 10m wind velocity, eastward (m/s)
+                  grid % v10(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10y, n)        ! 10m wind velocity, northward (m/s)
+                  grid % znt(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_znt, n)         ! roughness length (m)
+                  grid % psih(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_psih, n)       ! stability function, heat
+                  grid % WSPD(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
+                  grid % HOLCPL(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
+
                  ! --- Upward longwave radiation
                  grid % lwups(i,j) = -fcorr * x2a_a % rAttr(index_x2a_Faxx_lwup, n)
 

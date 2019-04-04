@@ -502,12 +502,12 @@ BENCH_START(surf_driver_tim)
      &        ,BLDT=grid%bldt     ,CURR_SECS=curr_secs, ADAPT_STEP_FLAG=adapt_step_flag  &
      &        ,BLDTACTTIME=grid%bldtacttime                                              & 
 #ifdef CCSMCOUPLED
-     &        ,PSIM=grid%psim          ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &
+     &        ,PSIM=grid%psim,  HOLCPL=grid%holcpl    ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &
 !#ifdef CCSM_USE_ATM_AOFLUX
 !    &        ,OCNU=grid%ocn_us        ,OCNV=grid%ocn_vs                                 &
 !endif
 #else
-     &        ,PSIM=psim          ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &
+     &        ,PSIM=psim,  HOLCPL=hol          ,P_PHY=grid%p_hyd        ,Q10=grid%q10            &
 #endif
      &        ,Q2=grid%q2              ,QFX=grid%qfx            ,QSFC=grid%qsfc          &
      &        ,QSHLTR=grid%qshltr      ,QZ0=grid%qz0            ,RAINCV=grid%raincv      &

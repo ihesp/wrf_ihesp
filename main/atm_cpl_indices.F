@@ -53,6 +53,16 @@ module atm_cpl_indices
   integer :: index_x2a_Sf_ofrac        ! surface ocn fraction
   integer :: index_x2a_Sx_tref         ! 2m reference temperature
   integer :: index_x2a_Sx_qref         ! 2m reference specific humidity
+
+!-  Y. Liu grib addtional variables from coupler
+  integer :: index_x2a_Sx_u10x         ! 10m wind velocity, eastward
+  integer :: index_x2a_Sx_u10y         ! 10m wind velocity, northward
+  integer :: index_x2a_Sx_znt          ! surface roughness length
+  integer :: index_x2a_Sx_psim         ! stability function, momentum
+  integer :: index_x2a_Sx_psih         ! stability function, heat
+  integer :: index_x2a_Sx_br           ! bulk richardson number
+  integer :: index_x2a_Sx_hol          ! height over Monin-Obukov length
+
 !  integer :: index_x2a_Sx_logz0        ! log of surface roughness
   integer :: index_x2a_Sx_avsdr        ! albedo, visible, direct
   integer :: index_x2a_Sx_anidr        ! albedo, near-ir, direct
@@ -135,6 +145,14 @@ contains
 
     index_x2a_Sx_tref       = mct_avect_indexra(x2a,'Sx_tref')
     index_x2a_Sx_qref       = mct_avect_indexra(x2a,'Sx_qref')
+!-  Y. Liu grib addtional variables from coupler
+    index_x2a_Sx_u10x       = mct_avect_indexra(x2a,'Sx_u10x')
+    index_x2a_Sx_u10y       = mct_avect_indexra(x2a,'Sx_u10y')
+    index_x2a_Sx_znt        = mct_avect_indexra(x2a,'Sx_znt')
+    index_x2a_Sx_psim       = mct_avect_indexra(x2a,'Sx_psim')
+    index_x2a_Sx_psih       = mct_avect_indexra(x2a,'Sx_psih')
+    index_x2a_Sx_br         = mct_avect_indexra(x2a,'Sx_br')
+    index_x2a_Sx_hol        = mct_avect_indexra(x2a,'Sx_hol')
 
 !    index_x2a_Sx_logz0      = mct_avect_indexra(x2a,'Sx_logz0')
 

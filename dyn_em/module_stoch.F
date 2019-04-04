@@ -80,6 +80,12 @@ contains
                        its, ite, jts, jte, kts, kte                  )
 
       USE module_configure
+#ifdef CCSMCOUPLED
+      USE seq_comm_mct,  only : seq_comm_inst,ATMID
+!     YL add for different random initialize number for different driver
+!     no random number is needed for input 
+!     only works for multi-drive but not multi-instance
+#endif 
       IMPLICIT NONE
       TYPE (grid_config_rec_type)                       :: config_flags
       INTEGER :: IER,IK,IL,I,J
@@ -98,6 +104,13 @@ contains
 
       LOGICAL , EXTERNAL      :: wrf_dm_on_monitor
 
+#ifdef CCSMCOUPLED
+!     YL add for different random initialize number for different driver
+      INTEGER :: myinst
+
+
+      myinst = seq_comm_inst(ATMID(1))
+#endif 
     
 !     --------- SETUP PARAMETERS ---------------------------------------
       KMAX=(jde-jds)+1 !NLAT
@@ -334,6 +347,10 @@ contains
        IF ( wrf_dm_on_monitor() ) THEN
           iseed(1) = 7654321 
           iseed(2) = 2*(nens*811)+1
+#ifdef CCSMCOUPLED
+ ! YL add for multi-driver with different random seed
+         iseed(2) = 2*(myinst*811)+1
+#endif
           call random_seed(put=iseed)   ! set random seed on monitor.
        END IF
 #ifdef DM_PARALLEL
