@@ -823,6 +823,217 @@ EOF
 endif
 
 #--------------------------------------------------------------------------
+# ATM_GRID is txlw3k
+#--------------------------------------------------------------------------
+
+if ($ATM_GRID =~ txlw3k) then
+    set link_data = 1
+    if ($link_data) then
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA_DBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_LW_DATA .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_LW_DATA_DBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_SW_DATA .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_SW_DATA_DBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/CAM_ABS_DATA .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/CAM_AEROPT_DATA .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/ozone.formatted .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/ozone_lat.formatted .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/ozone_plev.formatted .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/GENPARM.TBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/LANDUSE.TBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/SOILPARM.TBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/urban_param.tbl .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/VEGPARM.TBL .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/tr49t67 .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/tr49t85 .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/tr67t85 .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/gribmap.txt .
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/run/grib2map.tbl .
+
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
+#--    if (${CONTINUE_RUN} == 'FALSE') then
+    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
+#--    endif
+    else
+    cp   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA_DBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_LW_DATA .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_LW_DATA_DBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_SW_DATA .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/RRTMG_SW_DATA_DBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/CAM_ABS_DATA .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/CAM_AEROPT_DATA .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/ozone.formatted .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/ozone_lat.formatted .
+    cp   $DIN_LOC_ROOT/atm/wrf//run/ozone_plev.formatted .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/GENPARM.TBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/LANDUSE.TBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/SOILPARM.TBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/urban_param.tbl .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/VEGPARM.TBL .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/tr49t67 .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/tr49t85 .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/tr67t85 .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/gribmap.txt .
+    cp   $DIN_LOC_ROOT/atm/wrf/run/grib2map.tbl .
+
+    cp   $DIN_LOC_ROOT/atm/wrf/txlw3k/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
+    if (${CONTINUE_RUN} == 'FALSE') then
+	cp   $DIN_LOC_ROOT/atm/wrf/txlw3k/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
+    endif
+    if ($spectral_nudging) then
+	cp   $DIN_LOC_ROOT/atm/wrf/wus12/wrffdda_d01_${st_year}${st_mon}01  wrffdda_d01
+    endif
+    chmod u+w *
+    endif
+
+    cat >! namelist.input <<EOF
+    &time_control
+    run_days                            = ${run_days},
+    run_hours                           = 0,
+    run_minutes                         = 0,
+    run_seconds                         = 0,
+    start_year                          = ${st_year},
+    start_month                         = ${st_mon},
+    start_day                           = ${st_day},
+    start_hour                          = ${st_hr},
+    start_minute                        = ${st_min},
+    start_second                        = ${st_sec},
+    end_year                            = 2010, 
+    end_month                           = 01,   
+    end_day                             = 04,   
+    end_hour                            = 00,  
+    end_minute                          = 00,  
+    end_second                          = 00,   
+    interval_seconds                    = 21600,
+    input_from_file                     = .true.,
+    history_interval                    = 180,  
+    frames_per_outfile                  = 8,   
+    restart                             = ${rest_flag},
+    restart_interval_d                  = 1,
+    io_form_history                     = 2,
+    io_form_restart                     = 2,
+    io_form_input                       = 2,
+    io_form_boundary                    = 2,
+    debug_level                         = 0,
+    auxinput1_inname                    = "met_em.d<domain>.<date>"
+    auxinput4_inname                    = "wrflowinp_d<domain>"
+    auxinput4_interval                  = 360 
+    io_form_auxinput4                   = 2
+    nocolons                            = .true.
+    output_diagnostics                  = 0
+    /
+
+    &domains
+    time_step                           = 15,
+    time_step_fract_num                 = 0,
+    time_step_fract_den                 = 1,
+    max_dom                             = 1,
+    e_we                                = 857,
+    e_sn                                = 812,
+    e_vert                              = 35,
+    p_top_requested                     = 5000,
+    num_metgrid_levels                  = 38,
+    num_metgrid_soil_levels             = 4,
+    dx                                  = 3000, 
+    dy                                  = 3000, 
+    grid_id                             = 1,    
+    parent_id                           = 0,    
+    i_parent_start                      = 1,     
+    j_parent_start                      = 1,  
+    parent_grid_ratio                   = 1,  
+    parent_time_step_ratio              = 1,    
+    feedback                            = 1,
+    smooth_option                       = 0,
+    interp_type                         = 1,
+    lowest_lev_from_sfc                 = .false.,
+    lagrange_order                      = 1,
+    force_sfc_in_vinterp                = 1,
+    zap_close_levels                    = 500,
+    sfcp_to_sfcp                        = .false.,
+    adjust_heights                      = .false.,
+    eta_levels                          = 1.000, 0.993, 0.983, 0.970, 0.954,
+					0.934, 0.909, 0.880, 0.845, 0.807,
+					0.765, 0.719, 0.672, 0.622, 0.571,
+					0.520, 0.468, 0.420, 0.376, 0.335,
+					0.298, 0.263, 0.231, 0.202, 0.175,
+					0.150, 0.127, 0.106, 0.088, 0.070,
+					0.055, 0.040, 0.026, 0.013, 0.000
+    /
+
+    &physics
+    mp_physics                          = 2,   
+    ra_lw_physics                       = 4,   
+    ra_sw_physics                       = 4, 
+    radt                                = 3,  
+    ra_call_offset                      = 0
+    cam_abs_freq_s                      = 21600,
+    levsiz                              = 59,
+    paerlev                             = 29,
+    cam_abs_dim1                        = 4,
+    cam_abs_dim2                        = 35,
+    sf_sfclay_physics                   = 1,
+    sf_surface_physics                  = 2,
+    bl_pbl_physics                      = 1,   
+    bldt                                = 0,    
+    cu_physics                          = 0,   
+    cudt                                = 5,     
+    isfflx                              = 1,
+    ifsnow                              = 0,
+    icloud                              = 1,
+    surface_input_source                = 1,
+    num_soil_layers                     = 4,
+    sf_urban_physics                    = 0,
+    maxiens                             = 1,
+    maxens                              = 3,
+    maxens2                             = 3,
+    maxens3                             = 16,
+    ensdim                              = 144,
+    sst_update                          = 0,
+    usemonalb                           = .true.
+    fractional_seaice                   = 0
+    /
+
+    &fdda
+    /
+
+    &dynamics
+    w_damping                           = 0,
+    diff_opt                            = 1,
+    km_opt                              = 4,
+    diff_6th_opt                        = 0,  
+    diff_6th_factor                     = 0.12, 
+    damp_opt                            = 0,
+    zdamp                               = 5000., 
+    dampcoef                            = 0.2,  
+    khdif                               = 0,   
+    kvdif                               = 0,   
+    non_hydrostatic                     = .true.,
+    moist_adv_opt                       = 1,
+    scalar_adv_opt                      = 1,
+    iso_temp                            = 0
+    /
+
+    &bdy_control
+    spec_bdy_width                      = 5,
+    spec_zone                           = 1,
+    relax_zone                          = 4,
+    specified                           = .true., 
+    nested                              = .false., 
+    /
+
+    &grib2
+    /
+
+    &namelist_quilt
+    nio_tasks_per_group = 0,
+    nio_groups = 1,
+    /
+    
+EOF
+endif
+#--------------------------------------------------------------------------
 # ATM_GRID is us20
 #--------------------------------------------------------------------------
 
