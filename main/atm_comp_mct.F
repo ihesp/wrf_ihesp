@@ -1262,6 +1262,9 @@ contains
                   grid % v10(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10y, n)        ! 10m wind velocity, northward (m/s)
                   grid % znt(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_znt, n)         ! roughness length (m)
                   grid % psih(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_psih, n)       ! stability function, heat
+                  grid % psim(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_psim, n)       !stability function, momentum
+                  grid % br(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_br, n)           ! bulk richardson number
+                  
                   grid % WSPD(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
                   grid % HOLCPL(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
 

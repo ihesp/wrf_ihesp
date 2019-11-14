@@ -132,13 +132,15 @@ if ($STOP_OPTION == 'ndays') then
     # This will be a problem if the number of run days takes us into the next month
     # because our WRF lateral boundary conditions are on a month-by-month basis.
     @ wrf_end_date = $run_days + $st_day - 1
-    if ($wrf_end_date > $days_in_month[$st_mon]) then
-        echo "You are asking to run RACM past available WRF lateral boundary conditions."
-        echo "Set stop_option in env_run.xml to nmonths rather than ndays to accomodate this."
-        exit 0
-    endif
+#- @YL  now the rf_end_date is not valided for R-CESM, We want a simulation run across monthes
+#    if ($wrf_end_date > $days_in_month[$st_mon]) then
+#        echo "You are asking to run RACM past available WRF lateral boundary conditions."
+#        echo "Set stop_option in env_run.xml to nmonths rather than ndays to accomodate this."
+#        exit 0
+#    endif
 endif
 
+#- now the WRF LBC across month. We can run across monthes, suggest using ndays to aviod run-days calculation, to be develop @YL
 if ($STOP_OPTION == 'nmonths') then
     if ($STOP_N != '1') then
         echo "WRF lateral bounday conditions exist on a month-by-month basis. Please run one month at a time."
@@ -639,9 +641,11 @@ if ($ATM_GRID =~ txlw9k) then
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/gribmap.txt .
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/grib2map.tbl .
 
-    ln -sf   $DIN_LOC_ROOT/atm/wrf/txlw9k/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfbdy_d01 wrfbdy_d01
+    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfinput_d01  wrfinput_d01
+#    ln -sf   $DIN_LOC_ROOT/atm/wrf/txlw9k/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
 #--    if (${CONTINUE_RUN} == 'FALSE') then
-    ln -sf  $DIN_LOC_ROOT/atm/wrf/txlw9k/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
+#    ln -sf  $DIN_LOC_ROOT/atm/wrf/txlw9k/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
 #--    endif
     else
     cp   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA .
@@ -781,6 +785,10 @@ if ($ATM_GRID =~ txlw9k) then
     sst_update                          = 0,
     usemonalb                           = .true.
     fractional_seaice                   = 0
+    stoch_force_opt                     = 1,
+    tot_backscat_psi                    = 1.0E-06,
+    tot_backscat_t                      = 5.0E-07,
+    nens                                = 1
     /
 
     &fdda
@@ -851,9 +859,11 @@ if ($ATM_GRID =~ txlw3k) then
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/gribmap.txt .
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/grib2map.tbl .
 
-    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
+#    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfbdy_d01 wrfbdy_d01
 #--    if (${CONTINUE_RUN} == 'FALSE') then
-    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
+#    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
+    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfinput_d01  wrfinput_d01
 #--    endif
     else
     cp   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA .
@@ -993,6 +1003,10 @@ if ($ATM_GRID =~ txlw3k) then
     sst_update                          = 0,
     usemonalb                           = .true.
     fractional_seaice                   = 0
+    stoch_force_opt                     = 1,
+    tot_backscat_psi                    = 1.0E-06,
+    tot_backscat_t                      = 5.0E-07,
+    nens                                = 1
     /
 
     &fdda
