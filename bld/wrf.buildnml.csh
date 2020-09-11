@@ -859,11 +859,11 @@ if ($ATM_GRID =~ txlw3k) then
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/gribmap.txt .
     ln -sf   $DIN_LOC_ROOT/atm/wrf/run/grib2map.tbl .
 
-#    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfbdy_d01_${st_year}${st_mon}0100 wrfbdy_d01
-    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfbdy_d01 wrfbdy_d01
+    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}${st_day}${st_hr}/wrfbdy_d01 wrfbdy_d01
+#    ln -sf   $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfbdy_d01 wrfbdy_d01
 #--    if (${CONTINUE_RUN} == 'FALSE') then
-#    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/wrfinput_d01_${st_year}${st_mon}0100  wrfinput_d01
-    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfinput_d01  wrfinput_d01
+    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}${st_day}${st_hr}/wrfinput_d01  wrfinput_d01
+#    ln -sf  $DIN_LOC_ROOT/atm/wrf/$ATM_GRID/${st_year}${st_mon}/wrfinput_d01  wrfinput_d01
 #--    endif
     else
     cp   $DIN_LOC_ROOT/atm/wrf/run/ETAMPNEW_DATA .
