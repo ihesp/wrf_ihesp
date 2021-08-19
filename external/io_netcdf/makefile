@@ -3,8 +3,10 @@
 OBJSL   = wrf_io.o field_routines.o module_wrfsi_static.o
 OBJS    = $(OBJSL)
 CODE    = ext_ncd_get_dom_ti.code ext_ncd_get_var_td.code ext_ncd_get_var_ti.code ext_ncd_put_dom_ti.code ext_ncd_put_var_td.code ext_ncd_put_var_ti.code transpose.code 
-FFLAGS  =  $(FCFLAGS) -I$(NETCDFPATH)/include -I../ioapi_share
-LIBS    = $(LIB_LOCAL) -L$(NETCDFPATH)/lib -lnetcdf
+#FFLAGS  =  $(FCFLAGS) -I$(NETCDFPATH)/include -I/scratch/group/ihesp/software/easybuild/eb/x86_64/sw/netCDF-Fortran/4.5.3-iimpi-2020b/include -I../ioapi_share
+FFLAGS  =  $(FCFLAGS) -I$(NETCDFPATH)/include -I$(NETCDFFPATH)/include -I../ioapi_share
+LIBS    = $(LIB_LOCAL)  -lnetcdf -lnetcdff
+#LIBS    = $(LIB_LOCAL) -L/scratch/group/ihesp/software/easybuild/eb/x86_64/sw/netCDF-Fortran/4.5.3-iimpi-2020b/lib -lnetcdf -lnetcdff
 CPP1    = $(CPP) $(TRADFLAG)
 M4      = m4 -Uinclude -Uindex -Ulen
 AR      = ar
@@ -23,7 +25,7 @@ libwrfio_nf.a:         $(OBJS) $(CODE)
 			$(RANLIB) $@
 
 wrf_io.o:               wrf_io.F90 $(CODE)
-			grep nf_format_64bit $(NETCDFPATH)/include/netcdf.inc ;\
+			grep nf_format_64bit /scratch/group/ihesp/software/easybuild/eb/x86_64/sw/netCDF-Fortran/4.5.3-iimpi-2019b/include/netcdf.inc ;\
                         a=$$? ; export a ; \
 			if [ $$a -a "$$WRFIO_NCD_LARGE_FILE_SUPPORT" = "1" ] ; then \
                           $(CPP1) -DWRFIO_NCD_LARGE_FILE_SUPPORT -I../ioapi_share wrf_io.F90 | $(M4) - > wrf_io.f ; \
@@ -49,8 +51,8 @@ diffwrf:                diffwrf.F90
 	$(FC) -c $(FFLAGS) diffwrf.f
 	@if [ \( -f ../../frame/wrf_debug.o \) -a \( -f ../../frame/module_wrf_error.o \) -a \( -f $(ESMF_MOD_DEPENDENCE) \) -a \( -f ../../frame/clog.o \) ] ; then \
 	  echo "diffwrf io_netcdf is being built now. " ; \
-          if [ \( -f $(NETCDFPATH)/lib/libnetcdff.a \) ] ; then \
-            $(FC) $(FFLAGS) $(LDFLAGS) -o diffwrf diffwrf.o $(OBJSL) ../../frame/wrf_debug.o ../../frame/module_wrf_error.o ../../frame/clog.o $(ESMF_IO_LIB_EXT) $(LIBS) -L$(NETCDFPATH)/lib -lnetcdff ;\
+          if [ \( -f $(NETCDFFPATH)/lib/libnetcdff.a \) ] ; then \
+            $(FC) $(FFLAGS) $(LDFLAGS) -o diffwrf diffwrf.o $(OBJSL) ../../frame/wrf_debug.o ../../frame/module_wrf_error.o ../../frame/clog.o $(ESMF_IO_LIB_EXT) $(LIBS) -L$(NETCDFFPATH)/lib -lnetcdff ;\
           else \
             $(FC) $(FFLAGS) $(LDFLAGS) -o diffwrf diffwrf.o $(OBJSL) ../../frame/wrf_debug.o ../../frame/module_wrf_error.o ../../frame/clog.o $(ESMF_IO_LIB_EXT) $(LIBS) ;\
           fi ; \

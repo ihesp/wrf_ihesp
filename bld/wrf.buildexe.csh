@@ -56,7 +56,7 @@ mkdir -p $objdir
 cd $srcdir
 cp -p -r $CODEROOT/components/wrf .
 cd ./wrf
-
+echo mach=$MACH
 # modify CCSMCASE in Registry to case name
 
 cd ./Registry

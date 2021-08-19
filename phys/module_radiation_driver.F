@@ -2253,6 +2253,7 @@ CONTAINS
      ! Uses nextsw_cday (wrf_sw_cday) from atm driver for higher accuracy
      ! and to solve shr_orb_decl's incompatibility with cday >= 366 in case
      ! of Gregorian calendar
+     ! @YL now we are running Gregorian Calendar, 366 is required
      use module_wrf_error
 
      implicit none
@@ -2268,14 +2269,18 @@ CONTAINS
                                                    ! over 1978-1998 (Frohlich &
                                                    ! Lean, 1998)
      ! --- Check that calendar day is between 1.xx and 365.xx
+     ! --- include 366 by  YL
      calday = real(julian, kind = r8) + 1._r8
      ! --- Make sure that 1. <= calday < 366. by reusing day 365 if calendar
      ! --- is Gregorian and leap year
      ! --- Based on hack by Dani Bundy-Coleman and Erik Kluzek Aug/2008 (CLM)
+     ! ---  now 366 for leap year
      if ( calday > 366._r8 ) calday = calday - 1._r8
-     if ((calday < 1._r8) .or. (calday >= 366._r8)) then
+     !if ((calday < 1._r8) .or. (calday >= 366._r8)) then
+     if ((calday < 1._r8) .or. (calday > 366._r8)) then
          write(wrf_err_message, '("(module_radiation_driver:solar_params):' // &
-               'ERROR: Calendar day outside bounds [1,366):",f14.8)') calday
+               'ERROR: Calendar day outside bounds [1,366]:",f14.8)') calday
+     !          'ERROR: Calendar day outside bounds [1,366):",f14.8)') calday
          call wrf_error_fatal( trim(wrf_err_message) )
      end if
      ! --- shr_orb_decl assumes calendar day 

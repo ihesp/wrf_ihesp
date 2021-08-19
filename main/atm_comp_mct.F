@@ -1088,6 +1088,7 @@ contains
         real     :: tsk
         real(r8) :: fcorr
         real(r8) :: frac, rbot, taux, tauy, ts
+        real(r8) ::  u10,v10
         real(r8) :: avsdr, anidr, avsdf, anidf,   &
                     swvdr, swndr, swvdf, swndf, swdwn
 
@@ -1258,15 +1259,17 @@ contains
                  !! grid % znt(i,j)   =  fcorr * exp(max(logz0_min, x2a_a % rAttr(index_x2a_Sx_logz0, n)))   ! roughness length (m)
 
                  !---- stability related variabels
-                  grid % u10(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10x, n)        ! 10m wind velocity, eastward (m/s)
-                  grid % v10(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10y, n)        ! 10m wind velocity, northward (m/s)
                   grid % znt(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_znt, n)         ! roughness length (m)
                   grid % psih(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_psih, n)       ! stability function, heat
                   grid % psim(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_psim, n)       !stability function, momentum
                   grid % br(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_br, n)           ! bulk richardson number
-                  
-                  grid % WSPD(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
                   grid % HOLCPL(i,j)   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_hol, n)        ! height over Monin-Obukov length
+
+                  u10   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10x, n)        ! 10m wind velocity, eastward (m/s)
+                  v10   =  fcorr *  x2a_a % rAttr(index_x2a_Sx_u10y, n)        ! 10m wind velocity, northward (m/s)
+                 ! Rotate back from Earth's (coupler) to WRF's grid
+                  grid % u10(i,j) = u10 * grid % cosa(i,j) + v10 * grid % sina(i,j)
+                  grid % v10(i,j) = v10 * grid % cosa(i,j) + u10 * grid % sina(i,j)
 
                  ! --- Upward longwave radiation
                  grid % lwups(i,j) = -fcorr * x2a_a % rAttr(index_x2a_Faxx_lwup, n)
